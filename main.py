@@ -10,7 +10,7 @@ import torch.nn as nn
 import torchvision
 from torchvision import transforms
 from transformers import BertTokenizer, BertModel, CLIPModel, CLIPProcessor
-from tqdm import tqdm  # tqdmのインポート
+from tqdm import tqdm  
 
 def set_seed(seed):
     random.seed(seed)
@@ -106,7 +106,7 @@ class VQAModel(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(512, n_answer)
         )
-        # Freeze CLIP model parameters
+        
         for param in self.clip.parameters():
             param.requires_grad = False
 
@@ -133,8 +133,8 @@ def train(model, dataloader, optimizer, criterion, device):
             ques = question[i].unsqueeze(0)
             att_mask = attention_mask[i].unsqueeze(0)
             ans = answers[i].unsqueeze(0)
-            mode_ans = mode_answer[i].item()  # Convert mode_answer to scalar
-            # Check if mode_answer is within the valid range
+            mode_ans = mode_answer[i].item()  
+            
             if mode_ans < 0 or mode_ans >= model.fc[-1].out_features:
                 continue
             pred = model(img, ques, att_mask)
