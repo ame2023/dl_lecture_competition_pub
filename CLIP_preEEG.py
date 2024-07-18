@@ -14,7 +14,7 @@ import numpy as np
 from einops.layers.torch import Rearrange
 from einops import rearrange
 import open_clip
-from pretrained_MAE2 import MAE, PatchEmbedding  
+from pretrained_MAE import MAE, PatchEmbedding  
 from src.utils import set_seed
 
 # CLIPモデルのロード
