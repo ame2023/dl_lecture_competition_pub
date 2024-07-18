@@ -11,7 +11,7 @@ import torchvision
 from torchvision import transforms
 from transformers import BertTokenizer, BertModel, CLIPModel, CLIPProcessor
 from sklearn.model_selection import train_test_split
-from tqdm import tqdm  # tqdmのインポート
+from tqdm import tqdm  
 
 def set_seed(seed):
     random.seed(seed)
@@ -107,7 +107,7 @@ class VQAModel(nn.Module):
             nn.ReLU(inplace=True),
             nn.Linear(512, n_answer)
         )
-        # Freeze CLIP model parameters
+        
         for param in self.clip.parameters():
             param.requires_grad = False
 
@@ -134,8 +134,8 @@ def train(model, dataloader, optimizer, criterion, device):
             ques = question[i].unsqueeze(0)
             att_mask = attention_mask[i].unsqueeze(0)
             ans = answers[i].unsqueeze(0)
-            mode_ans = mode_answer[i].item()  # Convert mode_answer to scalar
-            # Check if mode_answer is within the valid range
+            mode_ans = mode_answer[i].item()  
+            
             if mode_ans < 0 or mode_ans >= model.fc[-1].out_features:
                 continue
             pred = model(img, ques, att_mask)
@@ -176,8 +176,8 @@ def eval(model, dataloader, criterion, device):
                 att_mask = attention_mask[i].unsqueeze(0)
                 if answers is not None and mode_answer is not None:
                     ans = answers[i].unsqueeze(0)
-                    mode_ans = mode_answer[i].item()  # Convert mode_answer to scalar
-                    # Check if mode_answer is within the valid range
+                    mode_ans = mode_answer[i].item()  
+                    
                     if mode_ans < 0 or mode_ans >= model.fc[-1].out_features:
                         continue
                     pred = model(img, ques, att_mask)
@@ -187,7 +187,7 @@ def eval(model, dataloader, criterion, device):
                     batch_simple_acc += (pred.argmax(1) == mode_ans).float().mean().item()
                 else:
                     pred = model(img, ques, att_mask)
-                    loss = 0  # No ground truth for test set
+                    loss = 0  
                     batch_loss += loss
             total_loss += batch_loss / len(image)
             total_acc += batch_acc / len(image)
@@ -198,7 +198,7 @@ def main():
     set_seed(42)
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    # データの読み込みと分割
+    
     df = pd.read_json("./data/train.json")
     train_df, val_df = train_test_split(df, test_size=0.2, random_state=42)
 
@@ -261,10 +261,10 @@ def main():
     submission = [train_dataset.idx2answer[id] for id in submission]
     submission = np.array(submission)
 
-    print(f"Submission: {submission[:10]}")  # デバッグ出力
+    print(f"Submission: {submission[:10]}")  
 
     torch.save(model.state_dict(), "model.pth")
-    np.save("submission.npy", submission, allow_pickle=True)  # allow_pickle=True を追加
+    np.save("submission.npy", submission, allow_pickle=True)  
 
 if __name__ == "__main__":
     main()
